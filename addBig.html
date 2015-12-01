@@ -7,72 +7,69 @@
 <body>
 	
 <script type="text/javascript">
-// 数据基础处理
-function baseData(sNum1,sNum2){
-    var arr1,arr2,minLen,o={};
-    arr1 = sNum1.split('');
-    arr2 = sNum2.split('');
-    minLen = Math.min(arr1.length,arr2.length);
-    o={
-        arr1:arr1,
-        arr2:arr2,
-        minLen:minLen
-    };
-    return o;
-}
-// 一位数加法计算
-function baseAdd(num1,num2){
-	num1=parseInt(num1);
-	num2=parseInt(num2);
-    var res,o={};
-    res = num1 + num2;
-    res = res + ''; // 转字符串
-    res = res.split('');// 转数组
-    if(res.length==1){// 无进位
-        o.carry=0;
-        o.res=res[0];
-    }else{// 有进位
-    	o.carry=1;
-    	o.res=res[1];
+/*
+ * 功能：js大数加法
+ * 参数：string型数字
+ * 返回: string形数字
+*/
+var addBig={
+    main:function(sNum1,sNum2){// 对象入口
+        var o = this.baseData(sNum1,sNum2);
+        return this.add(o);
+    },
+    baseData:function(sNum1,sNum2){// 数据基础处理
+        var arr1,arr2,minLen,o={};
+        arr1 = sNum1.split('');
+        arr2 = sNum2.split('');
+        minLen = Math.min(arr1.length,arr2.length);
+        o.arr1=arr1;
+        o.arr2=arr2;
+        o.minLen=minLen;
+        return o;    
+    },
+    baseAdd:function(sNum1,sNum2){// 1位数加法
+        sNum1=parseInt(sNum1);
+        sNum2=parseInt(sNum2);
+        var res,o={};
+        res = sNum1 + sNum2;
+        res = res + ''; // 转字符串
+        res = res.split('');// 转数组
+        if(res.length==1){// 无进位
+            o.carry=0;o.res=res[0];
+        }else{// 有进位
+            o.carry=1;o.res=res[1]; 
+        }
+        return o;       
+    },
+    add:function(o){// 主逻辑
+        var arr1,arr2,minLen,arrMax,arrRes=[],carry=0,res,temp1,temp2,temp3,returnRes;
+        arr1 = o.arr1;
+        arr2 = o.arr2;
+        minLen = o.minLen;
+        for(var i=minLen-1;i>-1;i--){ // 数组末尾开始加运算
+            temp1 = this.baseAdd(arr1[i],arr2[i]);// 当前位1位数计算
+            res = this.baseAdd(temp1.res , carry);// 计算结果加上进位得到当前位结果
+            arrRes.unshift(res.res);// 计算结果推入数组首位
+            carry=temp1.carry;// 保存当前位的进位
+        }
+        // 得到较大的数组
+        if(arr1.length>minLen){
+            arrMax = arr1;
+        }else{
+            arrMax = arr2;
+        }
+        // 得到较大的数组中不参与计算的部分
+        if(arrMax.length==minLen){
+            returnRes = arrRes.join('');
+        }else{
+            temp3 = arrMax.slice(0,arrMax.length- minLen);
+            returnRes = temp3.join('')+arrRes.join('');
+        }        
+        return returnRes    
     }
-    return o;
 }
-//
-function addBig(o){
-    var arr1,arr2,minLen,arrMax,arrRes=[],carry=0,res,temp1,temp2,temp3,returnRes;
-    arr1 = o.arr1;
-    arr2 = o.arr2;
-    minLen = o.minLen;
-    for(var i=minLen-1;i>-1;i--){ // 数组末尾开始加运算
-        temp1 = baseAdd(arr1[i],arr2[i]);// 当前位1位数计算
-        res = baseAdd(temp1.res , carry);// 计算结果加上进位得到当前位结果
-        arrRes.unshift(res.res);// 计算结果推入数组首位
-        carry=temp1.carry;// 保存当前位的进位
-    }
-    // 得到较大的数组
-    if(arr1.length>minLen){
-    	arrMax = arr1;
-    }else{
-    	arrMax = arr2;
-    }
-    // 得到较大的数组中不参与计算的部分
-    if(arrMax.length==minLen){
-    	returnRes = arrRes.join('');
-    }else{
-    	temp3 = arrMax.slice(0,arrMax.length- minLen);
-    	returnRes = temp3.join('')+arrRes.join('');
-    }
-    
-    return returnRes
-}
-
-// 
-function addBigInit(sNum1,sNum2){
-	var a = baseData(sNum1,sNum2);
-	var b = addBig(a);
-	console.log(b,b.length);
-}
-addBigInit('12345123451234512345','12345123451234512345');
+var a=addBig.main('12345123451234512345','12345123451234512345');
+console.log(a);
 </script>
 
 </body>
