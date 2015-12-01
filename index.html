@@ -8,6 +8,11 @@
 	
 
 <script type="text/javascript">
+/*
+ * 作用：js的浮点数加法计算
+ * 参数：浮点数，整数
+ * 返回：计算结果
+*/
 function accAdd(arg1,arg2){  
     var r1,r2,m;
     if(parseInt(arg1)==arg1){
@@ -23,7 +28,10 @@ function accAdd(arg1,arg2){
     m=Math.pow(10,Math.max(r1,r2))  
     return (arg1*m+arg2*m)/m  
 }
-
+// 给number类型添加给add方法
+Number.prototype.add = function (arg) {
+    return accAdd(arg, this);
+};
 
 
 </script>
